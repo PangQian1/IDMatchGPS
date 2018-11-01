@@ -31,7 +31,7 @@ public class Main {
 		//map.write16PoiGps(PNamechongqingMid,POIchongqingMid,outPath16Chongqing); //计算得到输出文件16年重庆收费站经纬度
 		//map.getTollGps(CChongqingMid,CChongqingMif,outPath18Chongqing); //通过cmid和cmif文件处理得到所有收费站的经纬度
 		
-		
+		//
 		preProcess.processTraceData();//得到每部分经过高速的GPS轨迹数据
 //		
 //		preProcess.readTollCollection(cqTollData,cqTollDataOut);//得到指定天的收费数据
