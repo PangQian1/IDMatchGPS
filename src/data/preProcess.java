@@ -57,7 +57,15 @@ public class preProcess {
 		return rs;
 	}
 	
+	
+	/**
+	 * 
+	 * @param path 对应于每一部分每一天的路径名
+	 * @param setId 用于存放筛选出的位于指定范围内的车辆ID
+	 * @param listIn path路径下所有txt轨迹文件
+	 */
 	public static void readIdDay(String path,Set<String> setId,List<String> listIn){
+		
 		for(int j=0;j<listIn.size();j++){
 			String p=path+"/"+listIn.get(j);
 			BufferedReader reader=io.getReader(p,"GBK");
@@ -84,6 +92,13 @@ public class preProcess {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param path 对应于每一部分每一天文件夹的路径
+	 * @param setId 存放了经过指定范围车辆ID
+	 * @param listIn 对应于path路径下的文件列表
+	 * @param writer
+	 */
 	public static void writeTraceDay(String path,Set<String> setId,List<String> listIn,BufferedWriter writer){
 		for(int j=0;j<listIn.size();j++){
 			String p=path+"/"+listIn.get(j);
@@ -125,6 +140,7 @@ public class preProcess {
 		File file=new File(path);
 		List<String> list=Arrays.asList(file.list());
 		for(int i=0;i<list.size();i++){
+			//具体到每一天
 			String pathIn=path+"/"+list.get(i);
 			File fileIn=new File(pathIn);
 			List<String> listIn=Arrays.asList(fileIn.list());
@@ -143,13 +159,18 @@ public class preProcess {
 	}
 
 	public static void readTrace(String path,String out){
+		
+		//cqTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每天所有轨迹/";
+		//cqPlateTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每天每条轨迹/";
+		
 //		Map<String,List<String>> mapGrid=getGrid(tollSquareGps);
+		
 		File file=new File(path);
 		List<String> list=Arrays.asList(file.list());
 		for(int i=0;i<list.size();i++){
 			String p=path+list.get(i);
 			BufferedReader reader=io.getReader(p, "gbk");
-			String outDir=out+list.get(i).split("\\.")[0];
+			String outDir=out+list.get(i).split("\\.")[0];//获得每部分每天的路径名
 			File fileOutDir=new File(outDir);
 			if(!fileOutDir.exists()){
 				fileOutDir.mkdirs();
@@ -333,7 +354,7 @@ public class preProcess {
 		String cqPlateAllTrace1="";
 		String cqPassStation="";
 		
-		for(int i=0;i<4;i++){
+		for(int i=0;i<1;i++){
 			String a="";
 			if(i==0){
 				a="一";
@@ -350,7 +371,7 @@ public class preProcess {
 			cqPlateAllTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每条轨迹不同天/";
 			cqPlateAllTrace1="D:/货车轨迹数据分析/第"+a+"部份/重庆每条轨迹所有天/";
 			cqPassStation="D:/货车轨迹数据分析/第"+a+"部份/cqPassStation.csv";
-			checkExsistence(cqTrace);
+			checkExsistence(cqTrace);//检查是否存在，如果不存在，建立对应路径
 			checkExsistence(cqPlateTrace);
 			checkExsistence(cqPlateAllTrace);
 			checkExsistence(cqPlateAllTrace1);
@@ -361,11 +382,11 @@ public class preProcess {
 			System.out.println(cqPlateAllTrace);
 			System.out.println(cqPlateAllTrace1);
 			
-			readId(oriDir,cqTrace);//读取原始货车轨迹数据，筛选出某个省内的轨迹数据,将每个id一天内的数据放在一个文件内
+			//readId(oriDir,cqTrace);//读取原始货车轨迹数据，筛选出某个省内的轨迹数据,将所有id一天内的数据放在一个文件内
 			readTrace(cqTrace,cqPlateTrace);//读取每天的数据，按天建立文件夹，每个文件夹下，以id为key值，输出每个id在这一天的轨迹数据，以id名称为文件名
-			moveToOneDir(cqPlateTrace,cqPlateAllTrace); //以id名建立文件夹，将id名一样的不同天的文件移到相同id文件夹下
-			moveToOneFile(cqPlateAllTrace,cqPlateAllTrace1);//读取上一步每一个id文件夹，合并为一个文件，输出
-			passStation.getPassStation(cqPlateAllTrace1,outPath18Chongqing,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
+			//moveToOneDir(cqPlateTrace,cqPlateAllTrace); //以id名建立文件夹，将id名一样的不同天的文件移到相同id文件夹下
+			//moveToOneFile(cqPlateAllTrace,cqPlateAllTrace1);//读取上一步每一个id文件夹，合并为一个文件，输出
+			//passStation.getPassStation(cqPlateAllTrace1,outPath18Chongqing,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
 		}
 	}
 	
