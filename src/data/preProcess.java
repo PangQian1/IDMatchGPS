@@ -167,6 +167,7 @@ public class preProcess {
 		
 		File file=new File(path);
 		List<String> list=Arrays.asList(file.list());
+		
 		for(int i=0;i<list.size();i++){
 			String p=path+list.get(i);
 			BufferedReader reader=io.getReader(p, "gbk");
@@ -179,6 +180,7 @@ public class preProcess {
 			try{
 				Map<String,LinkedList<String>> map=new HashMap<>();
 				while((line=reader.readLine())!=null){
+				
 					String[] data=line.split(",");
 					if(data.length==6){
 						String id=data[0];
@@ -211,6 +213,8 @@ public class preProcess {
 				}
 			}catch(Exception e){
 				e.printStackTrace();
+			} finally {
+				
 			}
 		}
 	}
