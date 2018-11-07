@@ -72,6 +72,7 @@ public class gps {
         double[] point={gg_lat,gg_lon}; 
         return point;
     } 
+    
     public static double[] gcj02_To_Bd09(double gg_lon, double gg_lat) {
 		double x = gg_lon, y = gg_lat;
 		double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * pi);
@@ -81,9 +82,11 @@ public class gps {
 		double[] point={bd_lat,bd_lon}; 
 		return point;
 	}
+    
     private static double rad(double d){  
 	    return (d * Math.PI / 180.0);  
-	}  
+	}
+    
     public static double getDistance(double lng1,double lat1,double lng2,double lat2){
 		double radLat1 = rad(lat1);  
 		double radLat2 = rad(lat2);  

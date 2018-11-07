@@ -27,7 +27,7 @@ import dao.passStation;
 import data.gps;
 
 public class preProcess {
-	private static String outPath18Chongqing="G:/地图/收费站数据/18PoiChongqing.csv";
+	private static String outPath18Chongqing="H:/测试数据/18PoiChongqing.csv";//18年重庆收费站经纬度
 	private static String in="D:/货车轨迹数据分析";
 	private static String cqAllPassStation="D:/货车轨迹数据分析/cqAllPassStation.csv";
 	/**
@@ -220,13 +220,19 @@ public class preProcess {
 	}
 	
 	public static void moveToOneDir(String in,String out){
+		
+		//cqPlateTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每天每条轨迹/";
+		//cqPlateAllTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每条轨迹不同天/";
+		
 		File file=new File(in);
 		List<String> list=Arrays.asList(file.list());
 		for(int i=0;i<list.size();i++){
+			//每天的
 			String path=in+list.get(i);
 			File fileIn=new File(path);
 			List<String> listIn=Arrays.asList(fileIn.list());
 			for(int j=0;j<listIn.size();j++){
+				//遍历每天下边的所有以ID命名的轨迹文件
 				String p=path+"/"+listIn.get(j);
 				File fileCq=new File(p);
 				String id=listIn.get(j).split("\\.",2)[0];
@@ -241,6 +247,11 @@ public class preProcess {
 	}
 	
 	public static void moveToOneFile(String in,String out){
+		//读取上一步每一个id文件夹，合并为一个文件，输出
+		
+		//cqPlateAllTrace="D:/货车轨迹数据分析/第"+a+"部份/重庆每条轨迹不同天/";
+		//cqPlateAllTrace1="D:/货车轨迹数据分析/第"+a+"部份/重庆每条轨迹所有天/";
+		
 		try{
 			File file=new File(in);
 			List<String> list=Arrays.asList(file.list());
@@ -387,10 +398,10 @@ public class preProcess {
 			System.out.println(cqPlateAllTrace1);
 			
 			//readId(oriDir,cqTrace);//读取原始货车轨迹数据，筛选出某个省内的轨迹数据,将所有id一天内的数据放在一个文件内
-			readTrace(cqTrace,cqPlateTrace);//读取每天的数据，按天建立文件夹，每个文件夹下，以id为key值，输出每个id在这一天的轨迹数据，以id名称为文件名
+			//readTrace(cqTrace,cqPlateTrace);//读取每天的数据，按天建立文件夹，每个文件夹下，以id为key值，输出每个id在这一天的轨迹数据，以id名称为文件名
 			//moveToOneDir(cqPlateTrace,cqPlateAllTrace); //以id名建立文件夹，将id名一样的不同天的文件移到相同id文件夹下
 			//moveToOneFile(cqPlateAllTrace,cqPlateAllTrace1);//读取上一步每一个id文件夹，合并为一个文件，输出
-			//passStation.getPassStation(cqPlateAllTrace1,outPath18Chongqing,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
+			passStation.getPassStation(cqPlateAllTrace1,outPath18Chongqing,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
 		}
 	}
 	
