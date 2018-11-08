@@ -11,10 +11,10 @@ import data.preProcess;
 public class Main {
 	private static String PNamechongqingMid="D:/mapinfo_ditu/地图/level2/level2/chongqing/other/PNamechongqing.mid";//2016年地图重庆pName文件
 	private static String POIchongqingMid="D:/mapinfo_ditu/地图/level2/level2/chongqing/index/POIchongqing.mid";//2016年地图重庆poi文件
-	private static String CChongqingMid="H:/地图/secret/road2018q2/chongqing/road/Cchongqing.mid";//2018年地图重庆mid文件
-	private static String CChongqingMif="H:/地图/secret/road2018q2/chongqing/road/Cchongqing.mif";//2018年地图重庆mif文件
+	private static String CJiangSuMid="/home/pangqian/IDMatchGps/data/地图/secret/road2018q2/jiangsu1/road/Cjiangsu1.mid";//2018年地图江苏mid文件
+	private static String CJiangSuMif="/home/pangqian/IDMatchGps/data/地图/secret/road2018q2/jiangsu1/road/Cjiangsu1.mif";//2018年地图江苏mif文件
 	private static String outPath16Chongqing="G:/地图/收费站数据/16PoiChongqing.csv";//16年重庆收费站经纬度
-	private static String outPath18Chongqing="H:/测试数据/18PoiChongqing.csv";//18年重庆收费站经纬度
+	private static String outPath18Jiangsu="/home/pangqian/IDMatchGps/data/收费站信息/18PoiJiangsu.csv";//18年江苏收费站经纬度
 	
 	private static String in="D:/货车轨迹数据分析";//GPS原始数据文件
 	private static String cqTollData="";//重庆收费数据
@@ -29,7 +29,7 @@ public class Main {
 	public static void main(String[] args) throws IOException, ParseException{
 		
 		//map.write16PoiGps(PNamechongqingMid,POIchongqingMid,outPath16Chongqing); //计算得到输出文件16年重庆收费站经纬度
-		//map.getTollGps(CChongqingMid,CChongqingMif,outPath18Chongqing); //通过cmid和cmif文件处理得到所有收费站的经纬度
+		//map.getTollGps(CJiangSuMid,CJiangSuMif,outPath18Jiangsu); //通过cmid和cmif文件处理得到所有收费站的经纬度
 				
 		preProcess.processTraceData();//得到每部分经过高速的GPS轨迹数据
 //		

@@ -228,7 +228,7 @@ public class passStation {
 									timeList.add(time);
 									gps=lat+","+lng;
 								}else{
-									//此种情况货车没有挪动，经纬度与上个时间点一致
+									
 									if(timeList.size()<2){
 										timeList.add(time);
 									}else{
