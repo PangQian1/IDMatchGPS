@@ -118,6 +118,89 @@ public class map {
 		}
 	}
 	
+	
+	public static void getTollGps2(String pathCmid1,String pathCmif1,String pathCmid2,String pathCmif2,String outPath18){
+		BufferedReader reader1=io.getReader(pathCmif1,"GBK");
+		BufferedWriter writer=io.getWriter(outPath18, "GBK");
+		String line="";
+		int lineId=0;
+		try{
+			writer.write("linkId,lng,lat\n");
+			Map<Integer,String> idWithPointMessage1=readCMid(pathCmid1);
+			
+			while((line=reader1.readLine())!=null){
+				if(line.startsWith("Point")){
+					String f="";
+					lineId++;
+					if(idWithPointMessage1.containsKey(lineId)){
+						String[] data=line.split(" ",3);
+						f+=data[1]+" "+data[2];
+						String value=idWithPointMessage1.get(lineId);
+						value=value+";"+f;
+						idWithPointMessage1.put(lineId, value);
+					}
+				}
+			}
+			reader1.close();
+			System.out.println("mif1:"+lineId);
+			
+			BufferedReader reader2=io.getReader(pathCmif2,"GBK");
+			line="";
+			lineId=0;
+			Map<Integer,String> idWithPointMessage2=readCMid(pathCmid2);
+			
+			while((line=reader2.readLine())!=null){
+				if(line.startsWith("Point")){
+					String f="";
+					lineId++;
+					if(idWithPointMessage2.containsKey(lineId)){
+						String[] data=line.split(" ",3);
+						f+=data[1]+" "+data[2];
+						String value=idWithPointMessage2.get(lineId);
+						value=value+";"+f;
+						idWithPointMessage2.put(lineId, value);
+					}
+				}
+			}
+			reader2.close();
+			System.out.println("mif2:"+lineId);
+			
+			Set setPoint1=idWithPointMessage1.entrySet();
+			Map.Entry[] entriesPoint1 = (Map.Entry[])setPoint1.toArray(new Map.Entry[setPoint1.size()]);
+			for(int i=0;i<entriesPoint1.length;i++){
+				String value=entriesPoint1[i].getValue().toString();
+				String[] v=value.split(";",4);
+				String inLinkId=v[0]; //进入线号码
+				String outLinkId=v[1];  //退出线号码
+				String contentType=v[2]; //交通限制类型
+				String gps=v[3]; //经纬度
+				String lngLat=gps.split(" ",2)[0]+","+gps.split(" ",2)[1];
+				writer.write(inLinkId+","+lngLat+"\n");
+				writer.write(outLinkId+","+lngLat+"\n");
+			}
+			
+			Set setPoint2=idWithPointMessage2.entrySet();
+			Map.Entry[] entriesPoint2 = (Map.Entry[])setPoint2.toArray(new Map.Entry[setPoint2.size()]);
+			for(int i=0;i<entriesPoint2.length;i++){
+				String value=entriesPoint2[i].getValue().toString();
+				String[] v=value.split(";",4);
+				String inLinkId=v[0]; //进入线号码
+				String outLinkId=v[1];  //退出线号码
+				String contentType=v[2]; //交通限制类型
+				String gps=v[3]; //经纬度
+				String lngLat=gps.split(" ",2)[0]+","+gps.split(" ",2)[1];
+				writer.write(inLinkId+","+lngLat+"\n");
+				writer.write(outLinkId+","+lngLat+"\n");
+			}
+			
+			writer.flush();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 	/**
 	 * 读取pNameMid文件，找出其中为收费站的poiId和名称
 	 * @param pNameMidPath	pNameMid文件输入路径
