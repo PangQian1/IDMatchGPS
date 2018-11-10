@@ -315,7 +315,9 @@ public class dataMatch {
 	}
 	
 	public static void getMatch(String cqPassStation,String cqTollDataOut,String matchedId,String cqGpsToStationId) throws ParseException{
+		
 		Map<String,String> mapGpsStationId=map.matchGpsToStationId(outPath18Chongqing,outPath16Chongqing,cqStationName);
+		//mapGpsStationId 收费站gps为key，收费站id为value的map
 		
 		Map<String,String> mapIdOriginTrace=new HashMap<>();
 		Map<String,String> mapCarTrace=new HashMap<>();

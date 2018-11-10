@@ -194,6 +194,7 @@ public class map {
 			}
 			
 			writer.flush();
+			writer.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

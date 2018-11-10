@@ -23,8 +23,8 @@ public class Main {
 	private static String outPath18Jiangsu="/home/pangqian/IDMatchGps/data/收费站信息/18PoiJiangsu.csv";//18年江苏2收费站经纬度
 	
 	private static String in="D:/货车轨迹数据分析";//GPS原始数据文件
-	private static String AllTollData="";//全国5-18到5-24号的收费数据
-	private static String jsTollData="";//江苏5-18到5-24号的收费数据
+	private static String AllTollData="H:/收费站信息/收费数据/";//全国5-18到5-24号的收费数据
+	private static String jsTollData="H:/收费站信息/jsTollData.csv";//江苏5-18到5-24号的收费数据
 	//private static String jsTollDataOut="";//江苏5-18到5-24号的收费数据
 	private static String cqAllPassStation="D:/货车轨迹数据分析/cqAllPassStation.csv";//所有经过重庆的gps轨迹
 	
