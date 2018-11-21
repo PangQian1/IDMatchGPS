@@ -21,6 +21,8 @@ public class dataMatch {
 	private static String outPath16Chongqing="G:/地图/收费站数据/16PoiChongqing.csv";//16年重庆收费站经纬度
 	private static String outPath18Chongqing="G:/地图/收费站数据/18PoiChongqing.csv";//18年重庆收费站经纬度
 	private static String cqStationName="G:/新建文件夹/重庆/重庆站点表.csv";
+	private static String jsTollInfo = "/home/pangqian/IDMatchGps/data/收费站信息/江苏收费站.csv";
+	private static String jsTollInfo2 = "H:/收费站信息/江苏收费站.csv";
 	
 	private static String matchedId="D:/matchId.csv";//车牌与设备id对应表
 	private static String cqGpsToStationId="D:/cqGpsToStationId.csv";//收费站编号与收费站经纬度对应表
@@ -38,6 +40,8 @@ public class dataMatch {
 	 * @return					返回每个id经过的连续两个收费站id，经过的时间
 	 */
 	public static Map<String,Map<String,ArrayList<String>>> getIdStationIdTimeRange(String cqPassStation,Map<String,String> mapGpsStationId,Map<String,String> mapIdOriginTrace,Set<String> timeAquire){
+		//mapGpsStationId 收费站gps为key(lat,lng)，收费站id为value的map
+		
 		Map<String,Map<String,ArrayList<String>>> mapIdStationIdTimeRange=new HashMap<>();
 		try{
 			BufferedReader reader=io.getReader(cqPassStation, "gbk");
@@ -56,7 +60,7 @@ public class dataMatch {
 					String time1=square1.split(",",3)[2];
 					String squareGps2=square2.split(",",3)[0]+","+square2.split(",",3)[1];
 					String time2=square2.split(",",3)[2];	
-					if(mapGpsStationId.containsKey(squareGps1)&&mapGpsStationId.containsKey(squareGps2)){
+					if(mapGpsStationId.containsKey(squareGps1) && mapGpsStationId.containsKey(squareGps2)){
 						timeAquire.add(time1.substring(0, 13));
 						timeAquire.add(time2.substring(0, 13));
 						String station1=mapGpsStationId.get(squareGps1);
@@ -141,6 +145,7 @@ public class dataMatch {
 		}
 	}
 	
+	
 	/**
 	 * 读取收费数据，记录车辆进出站信息
 	 * @param cqTollDataOut	收费数据
@@ -148,25 +153,28 @@ public class dataMatch {
 	 * @param timeAquire	时间限制
 	 * @return
 	 */
-	public static Map<String,Map<String,ArrayList<String>>> readTrace(String cqTollDataOut,Map<String,String> mapCarTrace,Set<String> timeAquire){
+	public static Map<String,Map<String,ArrayList<String>>> readTrace(String jsTollData,Map<String,String> mapCarTrace,Set<String> timeAquire){
 		Map<String,Map<String,ArrayList<String>>> mapStationIdDayTime=new HashMap<>();
 		
 		try{
-			BufferedReader reader=io.getReader(cqTollDataOut, "GBK");
+			BufferedReader reader=io.getReader(jsTollData, "GBK");
 			String line="";
 			while((line=reader.readLine())!=null){
-				String[] data=line.split(",",9);
-				String plate=data[1];
-				String cx=data[2];
-				String inTime=data[3];
-				String outTime=data[4];
-				String inStation=data[5];
-				String outStation=data[6];
+				String[] data=line.split(",",8);
+				String plate=data[1].trim();//出口车牌
+				String cx=data[2].trim();//车型
+				String inTime=data[3].trim();
+				String outTime=data[4].trim();
+				String inStation=data[5].trim();
+				String outStation=data[6].trim();
 				String car=plate+","+cx;
-				if(cx.matches("[0-9]")&&Integer.parseInt(cx)>=2&&inTime.length()>14&&outTime.length()>14){
+				//if(cx.matches("[0-9]")&&Integer.parseInt(cx)>=2&&inTime.length()>14&&outTime.length()>14){
+				if(cx.matches("[0-9]+") && Integer.parseInt(cx)>=11 && inTime.length()>14 && outTime.length()>14){
 					String inTimeAquire=inTime.substring(0, 13);
 					String outTimeAquire=outTime.substring(0, 13);
+					//System.out.println(outTimeAquire);
 					if(timeAquire.contains(inTimeAquire)&&timeAquire.contains(outTimeAquire)){
+						System.out.println("jinru");
 						addMapStationIdDayTime(car,inStation,outStation,inTime,outTime,mapStationIdDayTime);
 					}
 					
@@ -196,6 +204,8 @@ public class dataMatch {
 	 */
 	public static Map<String,ArrayList<String>> getMapIdListCar(Map<String,Map<String,ArrayList<String>>> mapIdStationIdTimeRange,Map<String,Map<String,ArrayList<String>>> mapStationIdDayTime,Map<String,String> matchMap) throws ParseException{
 		Map<String,ArrayList<String>> mapIdListCar=new HashMap<>();
+		
+		int count = 0;
 		
 		for(String id:mapIdStationIdTimeRange.keySet()){
 			if(matchMap.containsKey(id)){
@@ -314,10 +324,11 @@ public class dataMatch {
 		System.out.println("更新后："+mapGpsStationId.size());
 	}
 	
-	public static void getMatch(String cqPassStation,String cqTollDataOut,String matchedId,String cqGpsToStationId) throws ParseException{
+	public static void getMatch(String cqPassStation,String jsTollData,String matchedId,String cqGpsToStationId) throws ParseException{
 		
-		Map<String,String> mapGpsStationId=map.matchGpsToStationId(outPath18Chongqing,outPath16Chongqing,cqStationName);
-		//mapGpsStationId 收费站gps为key，收费站id为value的map
+		//Map<String,String> mapGpsStationId=map.matchGpsToStationId(outPath18Chongqing,outPath16Chongqing,cqStationName);
+		Map<String,String> mapGpsStationId=map.matchGpsToStationId2(jsTollInfo2);    //mapGpsStationId 收费站gps为key(lat,lng)，收费站id为value的map
+		//System.out.println(mapGpsStationId.size());
 		
 		Map<String,String> mapIdOriginTrace=new HashMap<>();
 		Map<String,String> mapCarTrace=new HashMap<>();
@@ -330,10 +341,16 @@ public class dataMatch {
 			pre=mapGpsStationId.size();
 			Map<String,Map<String,ArrayList<String>>> mapIdStationIdTimeRange=getIdStationIdTimeRange(cqPassStation,mapGpsStationId,mapIdOriginTrace,timeAquire);
 			System.out.println("read cqPassStation finish!");
-			Map<String,Map<String,ArrayList<String>>> mapStationIdDayTime=readTrace(cqTollDataOut,mapCarTrace,timeAquire);
+			System.out.println(timeAquire);
+			
+			Map<String,Map<String,ArrayList<String>>> mapStationIdDayTime=readTrace(jsTollData,mapCarTrace,timeAquire);
 			System.out.println("read cqTollDataOut finish!");
+			System.out.println(mapStationIdDayTime.size());
+			
 			Map<String,ArrayList<String>> mapIdListCar=getMapIdListCar(mapIdStationIdTimeRange,mapStationIdDayTime,matchMap);
+			
 			updateMapGpsStationId(mapIdListCar,mapIdOriginTrace,mapCarTrace,mapGpsStationId,matchMap);
+			
 			System.out.println("总的id数："+mapIdOriginTrace.size());
 			System.out.println("匹配上的车："+matchMap.size());
 		}

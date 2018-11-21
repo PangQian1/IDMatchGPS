@@ -28,8 +28,8 @@ import data.gps;
 
 public class preProcess {
 	private static String outPath18Jiangsu="/home/pangqian/IDMatchGps/data/收费站信息/18PoiJiangsu.csv";//18年江苏收费站经纬度
-	private static String in="D:/货车轨迹数据分析";
-	private static String cqAllPassStation="D:/货车轨迹数据分析/cqAllPassStation.csv";
+	private static String in="/home/pangqian/IDMatchGps/data/货车轨迹数据分析";
+	private static String cqAllPassStation="/home/pangqian/IDMatchGps/data/货车轨迹数据分析/cqAllPassStation.csv";
 	
 	private static String AllTollData="H:/收费站信息/收费数据/";//全国5-18到5-24号的收费数据
 	private static String jsTollData="H:/收费站信息/jsTollData.csv";//江苏5-18到5-24号的收费数据
@@ -314,11 +314,23 @@ public class preProcess {
 		}
 	}
 	
+
+	public static String correctJsTime(String time){
+		if(time.length() > 12){
+			String sub1 = time.substring(0, 10);
+			String sub2 = time.substring(11);
+			
+			String correctTime = sub1 + " " + sub2;
+			return correctTime;
+		}
+		return null;
+	}
+	
 	public static void filterTollCollection(String in, String out){
 		
 		BufferedWriter writer=io.getWriter(out, "GBK");
 		try {
-			writer.write("id,chargeTime,weight,enTollLaneId,enTime,passCardId,cardId,enVehicleId,exVehicleId,enVehicleType,exVehicleType\n");
+			writer.write("cardId,exVehicleId,exVehicleType,enTime,exTime,enStation,exStation,weight\n");
 		
 			File file=new File(in);
 			List<String> list=Arrays.asList(file.list());
@@ -338,21 +350,20 @@ public class preProcess {
 							String weight = data[4].trim();//0表示客车， 大于0表示货车的重量
 							String enTollLaneId = data[5].trim();//入口车道编号
 							
-							if((id.length()>7 && enTollLaneId.length()>7 && !(weight.equals("0"))) && (id.substring(5, 7).equals("32") || enTollLaneId.substring(5, 7).equals("32"))){
+							if((id.length()>7 && !(weight.equals("0"))) && (id.substring(5, 7).equals("32") || enTollLaneId.length()>7 && enTollLaneId.substring(5, 7).equals("32"))){
 								//筛选江苏的收费数据
-								
-								String chargeTime = data[2].trim();//记账时间
-								String enTime = data[6].trim();//入口交易时间
-								String passCardId = data[7].trim();//通行卡ID号
 								String cardId = data[8].trim();//用户卡ID号
-								String enVehicleId = data[11].trim();//入口实际收费车辆车牌号码+颜色
-								String exVehicleId = data[12].trim();
-								String enVehicleType = data[14].trim();//入口收费车辆类型
-								String exVehicleType = data[15].trim();
 								
+								String exStation = id.substring(0, 14);//出口收费站ID
+								String exTime = correctJsTime(data[2].trim());//出口时间
+								String enStation = enTollLaneId.substring(0, 14);
+								String enTime = correctJsTime(data[6].trim());//入口交易时间
+								String exVehicleId = data[12].trim();//出口实际收费车辆车牌号码+颜色
+								String exVehicleType = data[15].trim();//出口车型
+							
 								//System.out.println(enVehicleId);
-								
-								writer.write(id+","+chargeTime+","+weight+","+enTollLaneId+","+enTime+","+passCardId+","+cardId+","+enVehicleId+","+exVehicleId+","+enVehicleType+","+exVehicleType+"\n");
+								writer.write(cardId+","+exVehicleId+","+exVehicleType+","+enTime+","+exTime+","+enStation+","+exStation+","+weight+"\n");
+								//writer.write(id+","+chargeTime+","+weight+","+enTollLaneId+","+enTime+","+passCardId+","+cardId+","+enVehicleId+","+exVehicleId+","+enVehicleType+","+exVehicleType+"\n");
 							}
 						}
 						
@@ -504,6 +515,6 @@ public class preProcess {
 		
 //		readTollCollection(cqTollData,cqTollDataOut);//得到指定天的收费数据
 //		processTraceData();//得到每部分经过收费站的数据
-		getAllCqPassStation(in,cqAllPassStation);//合并所有部分经过收费站的GPS数据
+		//getAllCqPassStation(in,cqAllPassStation);//合并所有部分经过收费站的GPS数据
 	}
 }

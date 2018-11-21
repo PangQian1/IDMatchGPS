@@ -342,6 +342,33 @@ public class map {
 		return mapGpsToStationId;
 	}
 	
+	
+	public static Map<String,String> matchGpsToStationId2(String jsTollInfo){
+		
+		Map<String,String> mapGpsToStationId=new HashMap<>();
+		try{
+			BufferedReader reader=io.getReader(jsTollInfo, "GBK");
+			String line="";
+			line = reader.readLine();
+			while((line=reader.readLine())!=null){
+				String[] data=line.split(",",5);
+				String name= data[1].trim();
+				String lng = data[3].trim();
+				String lat = data[4].trim();
+				
+				mapGpsToStationId.put(lat+","+lng, name);
+			}
+			
+			reader.close();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return mapGpsToStationId;
+		
+	}
+	
+	
 	public static void main(String[] args){
 		write16PoiGps(PNamechongqingMid,POIchongqingMid,outPath16Chongqing);
 		getTollGps(CChongqingMid,CChongqingMif,outPath18Chongqing);//输出18年地图收费站经纬度
