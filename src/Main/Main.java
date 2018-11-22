@@ -45,10 +45,10 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, ParseException{
 		
-		//map.write16PoiGps(PNamechongqingMid,POIchongqingMid,outPath16Chongqing); //计算得到输出文件16年重庆收费站经纬度
+		map.write16PoiGps(PNamechongqingMid,POIchongqingMid,outPath16Chongqing); //计算得到输出文件16年重庆收费站经纬度
 
 		//map.getTollGps(CJiangSuMid1,CJiangSuMif1,outPath18Jiangsu1); //通过cmid和cmif文件处理得到江苏1收费站的经纬度
-		//map.getTollGps(CJiangSuMid2,CJiangSuMif2,outPath18Jiangsu2); //通过cmid和cmif文件处理得到江苏2收费站的经纬度
+		map.getTollGps(CJiangSuMid2,CJiangSuMif2,outPath18Jiangsu2); //通过cmid和cmif文件处理得到江苏2收费站的经纬度
 		
 		//map.getTollGps2(CJiangSuMid1, CJiangSuMif1, CJiangSuMid2, CJiangSuMif2, outPath18Jiangsu);
 				
@@ -59,7 +59,7 @@ public class Main {
 		
 		dataMatch.getMatch(cqAllPassStation,jsTollData,matchedId,cqGpsToStationId);//设备id与车牌匹配
 
-		//matchedData.getMatchedIdData(matchedId,oneIdData);//按轨迹id输出轨迹数据，每条数据按时间排序
+		matchedData.getMatchedIdData(matchedId,oneIdData);//按轨迹id输出轨迹数据，每条数据按时间排序
 		//matchedData.reMatch(oneIdData,matchedId,jsTollData,matchData);//输出匹配的数据
 	}
 }

@@ -30,7 +30,7 @@ public class passStation {
 	 * @return ·µ»Øx£¬y×Ö·û´®
 	 */
 	public static String getXY(double lng,double lat,int d){
-		double[] a=gps.transform(Double.parseDouble("28.1446523718"), Double.parseDouble("105.3039432470"));
+		double[] a=gps.transform(Double.parseDouble("30.751965"), Double.parseDouble("116.257810"));
 		double bLng=a[1];
 		double bLat=a[0];
 		double x=Math.round(gps.getDistance(bLng, lng, lat, lat)/d);
