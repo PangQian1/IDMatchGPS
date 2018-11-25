@@ -28,6 +28,7 @@ import data.gps;
 
 public class preProcess {
 	private static String outPath18Jiangsu="/home/pangqian/IDMatchGps/data/收费站信息/18PoiJiangsu.csv";//18年江苏收费站经纬度
+	
 	private static String in="/home/pangqian/IDMatchGps/data/货车轨迹数据分析";
 	private static String cqAllPassStation="/home/pangqian/IDMatchGps/data/货车轨迹数据分析/cqAllPassStation.csv";
 	
@@ -350,7 +351,7 @@ public class preProcess {
 							String weight = data[4].trim();//0表示客车， 大于0表示货车的重量
 							String enTollLaneId = data[5].trim();//入口车道编号
 							
-							if((id.length()>7 && !(weight.equals("0"))) && (id.substring(5, 7).equals("32") || enTollLaneId.length()>7 && enTollLaneId.substring(5, 7).equals("32"))){
+							if((id.length()>7 && !(weight.equals("0"))) && (id.substring(5, 7).equals("32") && enTollLaneId.length()>7 && enTollLaneId.substring(5, 7).equals("32"))){
 								//筛选江苏的收费数据
 								String cardId = data[8].trim();//用户卡ID号
 								
@@ -384,6 +385,10 @@ public class preProcess {
 	}
 	
 	public static void readTollCollection(String in,String out) throws ParseException{
+		
+		//private static String cqTollData="";//重庆收费数据
+		//private static String cqTollDataOut="";//重庆5-18到5-24号的收费数据
+		
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date d1=sdf.parse("2018-05-17 23:59:59");
 		Date d2=sdf.parse("2018-05-25 00:00:00");
@@ -475,10 +480,12 @@ public class preProcess {
 			System.out.println(cqPlateAllTrace1);
 			
 			
-			readId(oriDir,cqTrace);//读取原始货车轨迹数据，筛选出某个省内的轨迹数据,将所有id一天内的数据放在一个文件内
-			readTrace(cqTrace,cqPlateTrace);//读取每天的数据，按天建立文件夹，每个文件夹下，以id为key值，输出每个id在这一天的轨迹数据，以id名称为文件名
-			moveToOneDir(cqPlateTrace,cqPlateAllTrace); //以id名建立文件夹，将id名一样的不同天的文件移到相同id文件夹下
-			moveToOneFile(cqPlateAllTrace,cqPlateAllTrace1);//读取上一步每一个id文件夹，合并为一个文件，输出
+			//readId(oriDir,cqTrace);//读取原始货车轨迹数据，筛选出某个省内的轨迹数据,将所有id一天内的数据放在一个文件内
+			//readTrace(cqTrace,cqPlateTrace);//读取每天的数据，按天建立文件夹，每个文件夹下，以id为key值，输出每个id在这一天的轨迹数据，以id名称为文件名
+			//moveToOneDir(cqPlateTrace,cqPlateAllTrace); //以id名建立文件夹，将id名一样的不同天的文件移到相同id文件夹下
+			//moveToOneFile(cqPlateAllTrace,cqPlateAllTrace1);//读取上一步每一个id文件夹，合并为一个文件，输出
+			//passStation.getPassStation(cqPlateAllTrace1,outPath18Jiangsu,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
+			
 			passStation.getPassStation(cqPlateAllTrace1,outPath18Jiangsu,cqPassStation);//得到经过收费站的车辆id，经过的收费广场经纬度，经过的时间
 		}
 	}

@@ -2,6 +2,7 @@ package data;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
+import org.omg.PortableInterceptor.ServerRequestInfo;
+
+import data.gps;
 import dao.io;
 import dao.map;
 
@@ -30,6 +35,51 @@ public class dataMatch {
 	private static String cChongqingMif="G:/最新地图/road2018q2/chongqing/road/Cchongqing.mif";
 	private static String cChongqingMid="G:/最新地图/road2018q2/chongqing/road/Cchongqing.mid";
 	private static String allStation="G:/新建文件夹/重庆/allStation_0608.txt";
+	
+	public static String getMinDisToll(String loc, String tollLocPath){
+		String tollLoc = "";
+		String lat = loc.split(",",2)[0];
+		String lng = loc.split(",", 2)[1];
+		Double dlat = Double.parseDouble(lat);
+		Double dlng = Double.parseDouble(lng);
+		
+		File file=new File(tollLocPath);
+		
+		BufferedReader reader=io.getReader(tollLocPath, "gbk");
+		
+		String line="";
+		Double min = Double.MAX_VALUE;
+		
+			try{
+				line = reader.readLine();
+				while((line=reader.readLine())!=null){
+				
+					String[] data=line.split(",");
+					if(data.length==5){
+						String id=data[0];
+						String name=data[1];
+		
+						double lng_toll=Double.parseDouble(data[3]);
+						double lat_toll=Double.parseDouble(data[4]);
+						double distance=gps.getDistance(dlng, dlat, lng_toll, lat_toll);
+						
+						if(min>distance){
+							min=distance;
+							tollLoc = lat_toll+","+lng_toll;
+						}
+				
+					}
+				}
+				reader.close();			
+			}catch(Exception e){
+				e.printStackTrace();
+			} finally {
+				
+			}
+		
+		
+		return tollLoc;
+	}
 	
 	/**
 	 * 读取GPS轨迹数据，将id经过的连续两个有收费站编号的数据保存下来，记录进出的时间。
@@ -60,21 +110,24 @@ public class dataMatch {
 					String time1=square1.split(",",3)[2];
 					String squareGps2=square2.split(",",3)[0]+","+square2.split(",",3)[1];
 					String time2=square2.split(",",3)[2];	
-					if(mapGpsStationId.containsKey(squareGps1) && mapGpsStationId.containsKey(squareGps2)){
-						timeAquire.add(time1.substring(0, 13));
-						timeAquire.add(time2.substring(0, 13));
-						String station1=mapGpsStationId.get(squareGps1);
-						String station2=mapGpsStationId.get(squareGps2);
-						if(mapStationIdTimeRange.containsKey(station1+","+station2)){
-							ArrayList<String> listTimeRange=mapStationIdTimeRange.get(station1+","+station2);
-							listTimeRange.add(time1+","+time2);
-							mapStationIdTimeRange.put(station1+","+station2, listTimeRange);
-						}else{
-							ArrayList<String> listTimeRange=new ArrayList<>();
-							listTimeRange.add(time1+","+time2);
-							mapStationIdTimeRange.put(station1+","+station2, listTimeRange);
-						}
+					
+					String tollLoc1 = getMinDisToll(squareGps1, jsTollInfo);
+					String tollLoc2 = getMinDisToll(squareGps2, jsTollInfo);
+					
+					timeAquire.add(time1.substring(0, 13));
+					timeAquire.add(time2.substring(0, 13));
+					String station1=mapGpsStationId.get(tollLoc1);
+					String station2=mapGpsStationId.get(tollLoc2);
+					if(mapStationIdTimeRange.containsKey(station1+","+station2)){
+						ArrayList<String> listTimeRange=mapStationIdTimeRange.get(station1+","+station2);
+						listTimeRange.add(time1+","+time2);
+						mapStationIdTimeRange.put(station1+","+station2, listTimeRange);
+					}else{
+						ArrayList<String> listTimeRange=new ArrayList<>();
+						listTimeRange.add(time1+","+time2);
+						mapStationIdTimeRange.put(station1+","+station2, listTimeRange);
 					}
+					
 				}
 				mapIdStationIdTimeRange.put(id, mapStationIdTimeRange);
 			}
@@ -174,7 +227,7 @@ public class dataMatch {
 					String outTimeAquire=outTime.substring(0, 13);
 					//System.out.println(outTimeAquire);
 					if(timeAquire.contains(inTimeAquire)&&timeAquire.contains(outTimeAquire)){
-						System.out.println("jinru");
+						//System.out.println("jinru");
 						addMapStationIdDayTime(car,inStation,outStation,inTime,outTime,mapStationIdDayTime);
 					}
 					
@@ -206,6 +259,10 @@ public class dataMatch {
 		Map<String,ArrayList<String>> mapIdListCar=new HashMap<>();
 		
 		int count = 0;
+		
+
+		//mapIdStationIdTimeRange Map<String,Map<String,ArrayList<String>>> <id,<station1,station2  list<time1,time2>>>
+		//mapStationIdDayTime	以Map<inStation+","+outStation,Map<Day,inTime+","+outTime+","+car>>
 		
 		for(String id:mapIdStationIdTimeRange.keySet()){
 			if(matchMap.containsKey(id)){
@@ -315,11 +372,11 @@ public class dataMatch {
 				}
 			}
 			matchMap.put(id, maxCar);
-			if(mapT!=null){
+		/*	if(mapT!=null){
 				for(String key:mapT.keySet()){
 					mapGpsStationId.put(key, mapT.get(key));
 				}
-			}
+			}*/
 		}
 		System.out.println("更新后："+mapGpsStationId.size());
 	}
@@ -327,8 +384,7 @@ public class dataMatch {
 	public static void getMatch(String cqPassStation,String jsTollData,String matchedId,String cqGpsToStationId) throws ParseException{
 		
 		//Map<String,String> mapGpsStationId=map.matchGpsToStationId(outPath18Chongqing,outPath16Chongqing,cqStationName);
-		Map<String,String> mapGpsStationId=map.matchGpsToStationId2(jsTollInfo2);    //mapGpsStationId 收费站gps为key(lat,lng)，收费站id为value的map
-		//System.out.println(mapGpsStationId.size());
+		Map<String,String> mapGpsStationId=map.matchGpsToStationId2(jsTollInfo);    //mapGpsStationId 收费站gps为key(lat,lng)，收费站id为value的map
 		
 		Map<String,String> mapIdOriginTrace=new HashMap<>();
 		Map<String,String> mapCarTrace=new HashMap<>();
@@ -348,6 +404,7 @@ public class dataMatch {
 			System.out.println(mapStationIdDayTime.size());
 			
 			Map<String,ArrayList<String>> mapIdListCar=getMapIdListCar(mapIdStationIdTimeRange,mapStationIdDayTime,matchMap);
+			System.out.println(mapIdListCar);
 			
 			updateMapGpsStationId(mapIdListCar,mapIdOriginTrace,mapCarTrace,mapGpsStationId,matchMap);
 			
